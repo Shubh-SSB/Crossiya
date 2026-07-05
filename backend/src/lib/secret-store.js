@@ -17,28 +17,46 @@ function ensureRuntimeDir() {
 }
 
 export function loadOrCreateSecrets() {
-  ensureRuntimeDir();
-
-  if (fs.existsSync(secretFilePath)) {
-    try {
-      const raw = fs.readFileSync(secretFilePath, "utf8");
-      const parsed = JSON.parse(raw);
-
-      if (parsed.tableAccessSecret && parsed.adminApiToken) {
-        return parsed;
-      }
-    } catch {
-      // Fall through and recreate the file.
-    }
+  // 1. Use Environment Variables if they exist (Required for Vercel)
+  if (process.env.TABLE_ACCESS_SECRET && process.env.ADMIN_API_TOKEN) {
+    return {
+      tableAccessSecret: process.env.TABLE_ACCESS_SECRET,
+      adminApiToken: process.env.ADMIN_API_TOKEN,
+    };
   }
 
-  const secrets = {
-    tableAccessSecret: generateSecret(),
-    adminApiToken: generateSecret(),
-  };
+  // 2. Try using the local file system (For local development)
+  try {
+    ensureRuntimeDir();
 
-  fs.writeFileSync(secretFilePath, `${JSON.stringify(secrets, null, 2)}\n`, "utf8");
-  return secrets;
+    if (fs.existsSync(secretFilePath)) {
+      try {
+        const raw = fs.readFileSync(secretFilePath, "utf8");
+        const parsed = JSON.parse(raw);
+
+        if (parsed.tableAccessSecret && parsed.adminApiToken) {
+          return parsed;
+        }
+      } catch {
+        // Fall through and recreate the file.
+      }
+    }
+
+    const secrets = {
+      tableAccessSecret: generateSecret(),
+      adminApiToken: generateSecret(),
+    };
+
+    fs.writeFileSync(secretFilePath, `${JSON.stringify(secrets, null, 2)}\n`, "utf8");
+    return secrets;
+  } catch (error) {
+    // 3. If file system is read-only (like Vercel) and env vars are missing, don't crash with 500 error.
+    console.error("Warning: Could not write secrets.json (read-only filesystem). Using temporary memory secrets. Set TABLE_ACCESS_SECRET and ADMIN_API_TOKEN in Vercel environment variables to persist sessions.");
+    return {
+      tableAccessSecret: generateSecret(),
+      adminApiToken: generateSecret(),
+    };
+  }
 }
 
 export function getSecretFilePath() {
