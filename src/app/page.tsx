@@ -23,7 +23,7 @@ export default function SplashPage() {
         requestAnimationFrame(tick);
       } else {
         // Small buffer so the bar visually completes before navigating
-        setTimeout(() => router.replace("/home"), 120);
+        setTimeout(() => router.replace("/cinematic"), 120);
       }
     };
 
