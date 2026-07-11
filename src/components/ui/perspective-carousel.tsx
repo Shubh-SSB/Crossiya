@@ -4,6 +4,7 @@ import * as React from "react";
 import { motion, type Transition } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
+import Image from "next/image";
 
 export interface PerspectiveCarouselItem {
   src: string;
@@ -42,31 +43,65 @@ const DEFAULT_TRANSITION: Transition = {
 
 const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
 
-function useResponsiveSlideWidth(baseWidth: number): number {
-  const [width, setWidth] = React.useState(baseWidth);
+function useResponsiveSlides(baseWidth: number, baseHeight: number) {
+  const [size, setSize] = React.useState({
+    width: baseWidth,
+    height: baseHeight,
+    rotation: 60,
+  });
 
   React.useEffect(() => {
-    function calculate() {
-      const vw = window.innerWidth;
-      if (vw < 480) {
-        setWidth(Math.min(baseWidth, vw * 0.55));
-      } else if (vw < 768) {
-        setWidth(Math.min(baseWidth, vw * 0.45));
-      } else if (vw < 1024) {
-        setWidth(Math.min(baseWidth, vw * 0.35));
+    const update = () => {
+      const w = window.innerWidth;
+
+      if (w < 480) {
+        setSize({
+          width: w * 0.68,
+          height: w * 1.1,
+          rotation: 30,
+        });
+      } else if (w < 640) {
+        setSize({
+          width: w * 0.58,
+          height: w * 0.95,
+          rotation: 35,
+        });
+      } else if (w < 768) {
+        setSize({
+          width: 280,
+          height: 390,
+          rotation: 40,
+        });
+      } else if (w < 1024) {
+        setSize({
+          width: 340,
+          height: 450,
+          rotation: 50,
+        });
+      } else if (w < 1440) {
+        setSize({
+          width: baseWidth,
+          height: baseHeight,
+          rotation: 60,
+        });
       } else {
-        setWidth(baseWidth);
+        setSize({
+          width: 520,
+          height: 620,
+          rotation: 65,
+        });
       }
-    }
+    };
 
-    calculate();
-    window.addEventListener("resize", calculate);
-    return () => window.removeEventListener("resize", calculate);
-  }, [baseWidth]);
+    update();
 
-  return width;
+    window.addEventListener("resize", update);
+
+    return () => window.removeEventListener("resize", update);
+  }, [baseWidth, baseHeight]);
+
+  return size;
 }
-
 export function PerspectiveCarousel({
   items,
   activeIndex,
@@ -98,8 +133,13 @@ export function PerspectiveCarousel({
   );
   const [isHovered, setIsHovered] = React.useState(false);
   const currentIndex = clamp(activeIndex ?? uncontrolledIndex, 0, maxIndex);
-  const responsiveWidth = useResponsiveSlideWidth(slideWidth);
-  const safeSlideWidth = Math.max(96, responsiveWidth);
+  const { width, height, rotation } = useResponsiveSlides(
+    slideWidth,
+    slideHeight
+  );
+
+  const safeSlideWidth = Math.max(120, width);
+  const safeSlideHeight = Math.max(180, height);
   const safeInactiveScale = clamp(inactiveScale, 0.5, 1);
 
   // Auto-play: advance slides on interval, pause on hover
@@ -174,10 +214,17 @@ export function PerspectiveCarousel({
     >
       <div
         className={cn("absolute inset-0 overflow-hidden", viewportClassName)}
-        style={{ perspective: "1200px" }}
+        style={{
+          perspective:
+            window.innerWidth < 768
+              ? "700px"
+              : window.innerWidth < 1024
+                ? "900px"
+                : "1200px"
+        }}
       >
         <motion.div
-          className="absolute left-1/2 top-1/2 flex w-fit -translate-y-1/2 items-center"
+          className="absolute left-1/2 top-1/2 flex w-fit -translate-x-[10%] -translate-y-1/2 items-center sm:-translate-x-[5%] md:translate-x-0"
           animate={{ x: -(currentIndex * safeSlideWidth + safeSlideWidth / 2) }}
           transition={transition}
         >
@@ -196,7 +243,7 @@ export function PerspectiveCarousel({
                     slideClassName
                   )}
                   animate={{
-                    rotateY: (currentIndex - index) * rotationStep,
+                    rotateY: (currentIndex - index) * rotation,
                     scale: isActive ? 1 : safeInactiveScale,
                   }}
                   transition={transition}
@@ -207,14 +254,15 @@ export function PerspectiveCarousel({
                     aria-label={`Show ${item.title}`}
                     aria-current={isActive ? "true" : undefined}
                     className="w-full cursor-pointer overflow-hidden rounded-lg"
-                    style={{ height: slideHeight }}
+                    style={{ height: safeSlideHeight }}
                     onClick={() => selectSlide(index)}
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
+                    <Image
                       src={item.src}
                       alt={item.alt ?? item.title}
                       draggable={false}
+                      fill
                       className={cn(
                         "h-full w-full select-none object-cover shadow-xl",
                         imageClassName
@@ -242,7 +290,7 @@ export function PerspectiveCarousel({
       {showControls && (
         <div
           className={cn(
-            "absolute inset-x-4 bottom-5 z-10 mx-auto flex w-fit items-center justify-center gap-3 rounded-full border border-neutral-300/80 bg-black/10 px-2 text-neutral-700 shadow-sm backdrop-blur-sm dark:border-white/10 dark:bg-neutral-900/70 dark:text-neutral-100",
+            "absolute bottom-4 left-1/2 z-10 flex -translate-x-1/2 items-center gap-3 rounded-full border border-neutral-300/70 bg-black/15 px-2 py-1 shadow-lg backdrop-blur-md",
             controlsClassName
           )}
         >
@@ -250,7 +298,7 @@ export function PerspectiveCarousel({
             type="button"
             aria-label="Show previous slide"
             disabled={isPreviousDisabled}
-            className="inline-flex size-9 items-center justify-center rounded-full transition-colors hover:bg-white/70 disabled:cursor-not-allowed disabled:opacity-35 dark:hover:bg-white/10"
+            className="inline-flex size-8 sm:size-9 md:size-10 items-center justify-center rounded-full transition-colors hover:bg-white/70 disabled:cursor-not-allowed disabled:opacity-35 dark:hover:bg-white/10"
             onClick={() => selectSlide(currentIndex - 1)}
           >
             <ChevronLeft className="size-5" />
@@ -266,7 +314,9 @@ export function PerspectiveCarousel({
                   aria-current={currentIndex === index ? "true" : undefined}
                   className={cn(
                     "h-2 rounded-full bg-current transition-[width,opacity] duration-300",
-                    currentIndex === index ? "w-7 opacity-100" : "w-2 opacity-30"
+                    currentIndex === index
+                      ? "w-6 sm:w-7 md:w-8"
+                      : "w-2"
                   )}
                   onClick={() => selectSlide(index)}
                 />
@@ -278,7 +328,7 @@ export function PerspectiveCarousel({
             type="button"
             aria-label="Show next slide"
             disabled={isNextDisabled}
-            className="inline-flex size-9 items-center justify-center rounded-full transition-colors hover:bg-white/70 disabled:cursor-not-allowed disabled:opacity-35 dark:hover:bg-white/10"
+            className="inline-flex size-8 sm:size-9 md:size-10 items-center justify-center rounded-full transition-colors hover:bg-white/70 disabled:cursor-not-allowed disabled:opacity-35 dark:hover:bg-white/10"
             onClick={() => selectSlide(currentIndex + 1)}
           >
             <ChevronRight className="size-5" />

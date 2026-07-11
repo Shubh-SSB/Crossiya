@@ -1,5 +1,6 @@
 import Image from 'next/image'
 import React from 'react'
+import CornerDisplay from '../corners'
 
 export const Footer = () => {
     return (
@@ -10,7 +11,8 @@ export const Footer = () => {
                 <div className="w-full lg:w-1/2 p-6 md:p-12 lg:p-20 flex flex-col xl:flex-row gap-8 lg:border-r border-[#0f0a05]/10">
                     <div className="relative w-full xl:w-64 h-[350px] shrink-0 rounded-sm overflow-hidden bg-neutral-200">
                         {/* Using the image provided in your stub, ensure it exists in public/images! */}
-                        <Image src="/images/intro.jpg" alt="Catering" fill className="object-cover" />
+                        {/* <Image src="/images/intro.jpg" alt="Catering" fill className="object-cover" /> */}
+                        <CornerDisplay />
                     </div>
                     <div className="flex flex-col justify-end max-w-sm pb-2">
                         <p className="font-archivo text-sm md:text-base leading-relaxed mb-8 font-medium">
