@@ -17,7 +17,7 @@ const items = [
 export default function CrossiyaPage() {
     return (
         <>
-            <SmoothScroll options={{ lerp: 0.1 }}>
+            <SmoothScroll options={{ lerp: 0.2 }}>
                 <section className="">
                     <div className="relative min-h-screen w-full overflow-hidden">
                         <video

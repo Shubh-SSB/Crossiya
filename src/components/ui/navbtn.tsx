@@ -1,15 +1,16 @@
 import React from 'react';
 import styled from 'styled-components';
+import Link from 'next/link';
 
 const Navbtn = () => {
     return (
         <StyledWrapper className="">
-            <a className="fancy" href="/Menu">
+            <Link className="fancy" href="/menu">
                 <span className="top-key" />
                 <span className="text">Order Now</span>
                 <span className="bottom-key-1" />
                 <span className="bottom-key-2" />
-            </a>
+            </Link>
         </StyledWrapper>
     );
 }
