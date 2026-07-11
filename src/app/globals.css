@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@plugin "daisyui";
 @source "../src";
 @import "tw-animate-css";
 
@@ -46,6 +47,8 @@
   --font-body: "Plus Jakarta Sans", system-ui, sans-serif;
   --font-poppins: "Poppins", system-ui, sans-serif;
   --font-handwriting: "Alex Brush", cursive;
+  --font-belle: "Bellefair", serif;
+  --font-archivo: "Archivo Narrow", sans-serif;
 }
 
 :root {

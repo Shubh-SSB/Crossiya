@@ -23,7 +23,7 @@ export default function SplashPage() {
         requestAnimationFrame(tick);
       } else {
         // Small buffer so the bar visually completes before navigating
-        setTimeout(() => router.replace("/cinematic"), 120);
+        setTimeout(() => router.replace("/crossiya"), 120);
       }
     };
 
