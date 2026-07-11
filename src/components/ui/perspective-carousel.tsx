@@ -215,12 +215,7 @@ export function PerspectiveCarousel({
       <div
         className={cn("absolute inset-0 overflow-hidden", viewportClassName)}
         style={{
-          perspective:
-            window.innerWidth < 768
-              ? "700px"
-              : window.innerWidth < 1024
-                ? "900px"
-                : "1200px"
+          perspective: "1200px"
         }}
       >
         <motion.div
