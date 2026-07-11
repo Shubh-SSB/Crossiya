@@ -161,6 +161,25 @@ export function PerspectiveCarousel({
     }
   };
 
+  const touchStartRef = React.useRef<number | null>(null);
+
+  const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+    touchStartRef.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (touchStartRef.current === null) return;
+    const deltaX = e.changedTouches[0].clientX - touchStartRef.current;
+    if (Math.abs(deltaX) > 50) {
+      if (deltaX > 0) {
+        selectSlide(currentIndex - 1);
+      } else {
+        selectSlide(currentIndex + 1);
+      }
+    }
+    touchStartRef.current = null;
+  };
+
   return (
     <div
       role="region"
@@ -170,6 +189,8 @@ export function PerspectiveCarousel({
       onKeyDown={handleKeyDown}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
       className={cn("relative isolate h-full w-full overflow-hidden", className)}
       {...props}
     >

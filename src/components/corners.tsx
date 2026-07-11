@@ -409,7 +409,7 @@ export function CornerDisplay({
                 className="slide-content absolute inset-0 w-full h-full mix-blend-difference select-none pointer-events-none z-[2]"
                 style={{ opacity: texturesLoaded ? 1 : 0, transition: "opacity 0.5s ease" }}
             >
-                <div className="absolute top-1/2 left-8 md:left-24 -translate-y-1/2 w-full max-w-xl text-white px-4">
+                {/* <div className="absolute top-1/2 left-8 md:left-24 -translate-y-1/2 w-full max-w-xl text-white px-4">
                     <div className="overflow-hidden mb-4">
                         <p className="line-anim text-xs font-semibold uppercase tracking-[0.2em] text-white will-change-transform">
                             Highlights
@@ -425,7 +425,7 @@ export function CornerDisplay({
                             {slides[currentIndex].description}
                         </p>
                     </div>
-                </div>
+                </div> */}
             </div>
         </div>
     );
