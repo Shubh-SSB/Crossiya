@@ -42,7 +42,7 @@ export default function CrossiyaPage() {
                         </div>
                     </div >
                 </section>
-                <section className="relative min-h-screen w-full overflow-hidden">
+                {/* <section className="relative min-h-screen w-full overflow-hidden">
                     <Image
                         src="/images/intro.jpg"
                         alt="Intro Background"
@@ -58,8 +58,7 @@ export default function CrossiyaPage() {
                             Every cup, every bite, every visit. Crossiya is a place where exceptional coffee, fresh cuisine, and inviting ambiance come together effortlessly.
                         </p>
                     </div>
-                    {/* Content (z-10) goes here */}
-                </section>
+            </section> */}
                 <section className="relative flex min-h-screen w-full flex-col bg-[#0f0a05] lg:flex-row">
                     {/* Image Section: Top on mobile, Left on PC */}
                     <div className="relative h-[45vh] w-full overflow-hidden sm:h-[55vh] md:h-[60vh] lg:min-h-screen lg:w-1/2">
@@ -229,7 +228,7 @@ export default function CrossiyaPage() {
                 <section>
                     <Footer />
                 </section>
-            </SmoothScroll>
+            </SmoothScroll >
         </>
     );
 }
